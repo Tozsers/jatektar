@@ -58,7 +58,7 @@ JATEKOK.push({
     const T = Tetris, cfg = T.cfg(n), r = rnd(Date.now());
     const c = Math.max(12, Math.floor(Math.min(ctx.szelesseg * .72 / T.W, 38, ctx.helyMagas(80) / T.H)));
     const BW = c * T.W, BH = c * T.H, OLD = Math.max(70, c * 4.2);
-    const { cv, x } = ctx.vaszon(BW + OLD + 10, BH);
+    const { cv, x } = ctx.vaszon(BW + OLD + 10, BH); cv.style.boxShadow = 'none';   // a jobb oldali panel alatt ne legyen árnyék
     const t = T.ures(); T.szemet(t, cfg.szemet, r);
     let zsak = [], akt, kov = null, ox, oy, m, fut = true, ido = 0, elozo = 0, sorok = 0;
     const huz = () => { if (!zsak.length) zsak = T.zsak(r); return zsak.pop(); };
@@ -91,7 +91,7 @@ JATEKOK.push({
       // jobb oldal: következő elem + sorok
       const sx = BW + 10;
       x.fillStyle = '#fff'; x.strokeStyle = INK; x.lineWidth = 3; x.beginPath(); x.roundRect(sx, 0, OLD, OLD * 1.05, 12); x.fill(); x.stroke();
-      x.fillStyle = INK; x.font = `900 ${Math.round(OLD * .16)}px Nunito, sans-serif`; x.textAlign = 'center'; x.fillText('KÖVETKEZŐ', sx + OLD / 2, OLD * .22);
+      x.fillStyle = INK; x.font = `900 ${Math.round(OLD * .125)}px Nunito, sans-serif`; x.textAlign = 'center'; x.fillText('KÖVETKEZŐ', sx + OLD / 2, OLD * .2, OLD - 8);
       if (kov) { const kc = OLD / 5.2, km = T.ALAK[kov].m, sz = T.ALAK[kov];
         for (const [a, b] of km) { const X = sx + OLD / 2 + (a - 2) * kc, Y = OLD * .38 + b * kc; x.fillStyle = sz.c; x.fillRect(X, Y, kc - 2, kc - 2); x.strokeStyle = INK; x.lineWidth = 1.5; x.strokeRect(X, Y, kc - 2, kc - 2); } }
       x.fillStyle = '#fff'; x.beginPath(); x.roundRect(sx, OLD * 1.2, OLD, OLD * .8, 12); x.fill(); x.stroke();

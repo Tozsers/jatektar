@@ -129,7 +129,9 @@ function jatek(jid, n) {
     },
     vesztett(uzenet) { vegAblak(j, n, '', uzenet || veletlen(j.duma.veszt), 'hoppa', 'HOPPÁ!', false); }
   };
-  futo = j.indit(ctx, n);
+  // a vásznak a képregényes betűkkel rajzolnak: előbb töltődjenek be (különben sima betűvel jelenne meg)
+  Promise.all(['400 30px "Lilita One"', '400 30px Bangers'].map(f => document.fonts.load(f))).catch(() => { })
+    .then(() => { if (ter.isConnected && !futo) futo = j.indit(ctx, n); });
 }
 
 function vegAblak(j, n, csillag, szoveg, hangulat, cim, nyert) {

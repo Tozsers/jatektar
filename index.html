@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<title>Karcsi Játéktára</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Kígyó, amőba, tetrisz, kirakó, memória — 100-100 szint, Kocka Karcsival.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<style>
+/* Layout: egy oszlopos, telefonra szabott képregény-stílus (a Számhegy alapjai) — játékosok → főoldal (játékkártyák) → szintrács → játék (vászon + vezérlők) */
+:root{
+  color-scheme:light;
+  --ink:#1b1b2f;          /* képregény-kontúr */
+  --sky1:#2f8cff; --sky2:#8fd8ff;
+  --paper:#ffffff; --paper2:#eef0f6;
+  --num:#2f9bff; --num-d:#1a6fd1;
+  --plus:#ff9a1f; --plus-d:#d9700a;
+  --minus:#a98bff; --minus-d:#7a5ce0;
+  --eq:#ff5d8f; --eq-d:#d63a6c;
+  --blank:#8e8f9b; --blank-d:#6b6c78;
+  --yellow:#ffc82e; --yellow-d:#f08a00;
+  --ok:#34c759; --ok-d:#1f9a40; --bad:#ff4d4d;
+  --grass:#7ed957; --rock:#9aa0a8;
+  --f-comic:"Bangers","Lilita One",Impact,"Arial Black",sans-serif;
+  --f-tile:"Lilita One","Arial Rounded MT Bold","Arial Black",sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:800 16px/1.35 var(--f-body);color:var(--ink);
+  background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 70%,#c9f1ff 100%) fixed;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 24px;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;overflow-x:hidden}
+/* felhők */
+.clouds{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.cloud{position:absolute;width:160px;height:56px;background:#fff;border-radius:60px;opacity:.9;filter:drop-shadow(0 3px 0 rgba(27,27,47,.15))}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:70px;height:70px;left:22px;top:-34px}
+.cloud::after{width:52px;height:52px;left:80px;top:-22px}
+.cloud.c1{top:9%;left:-20px;transform:scale(.9);animation:drift 60s linear infinite}
+.cloud.c2{top:30%;right:-40px;transform:scale(.7);animation:drift 80s linear infinite reverse}
+.cloud.c3{top:62%;left:10%;transform:scale(.55);animation:drift 90s linear infinite}
+@keyframes drift{from{translate:-30px 0}to{translate:30px 0}}
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;display:grid;gap:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+
+/* képregény-gomb */
+.cbtn{border:3px solid var(--ink);border-radius:14px;background:var(--yellow);box-shadow:0 5px 0 var(--ink);
+  font:400 22px/1 var(--f-comic);letter-spacing:.06em;padding:12px 18px;transition:transform .08s,box-shadow .08s}
+.cbtn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.cbtn.blue{background:var(--num);color:#fff;text-shadow:2px 2px 0 var(--ink)}
+.cbtn.pink{background:var(--eq);color:#fff;text-shadow:2px 2px 0 var(--ink)}
+.cbtn.small{font-size:17px;padding:8px 12px;border-radius:12px;box-shadow:0 4px 0 var(--ink)}
+.cbtn[disabled]{filter:grayscale(.8);opacity:.6}
+
+/* fejléc-szalag */
+.banner{justify-self:center;background:var(--yellow);border:3px solid var(--ink);border-radius:22px;box-shadow:0 7px 0 var(--yellow-d),0 7px 0 3px var(--ink);
+  padding:8px 26px 4px;transform:rotate(-2deg)}
+.banner h1{margin:0;font:400 clamp(44px,13vw,68px)/1 var(--f-comic);letter-spacing:.05em;color:#fff;
+  -webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:4px 4px 0 var(--ink)}
+.tagline{text-align:center;color:#fff;font:900 15px var(--f-body);text-shadow:0 2px 0 rgba(27,27,47,.55)}
+
+/* buborék + kabala */
+.talk{display:flex;align-items:flex-end;gap:10px}
+.bubble{position:relative;flex:1;min-width:0;background:#fff;border:3px solid var(--ink);border-radius:22px;padding:10px 14px;
+  font:800 15.5px/1.3 var(--f-body);box-shadow:0 4px 0 rgba(27,27,47,.25)}
+.bubble::before{content:"";position:absolute;left:-15px;bottom:14px;border:9px solid transparent;border-right:14px solid var(--ink)}
+.bubble::after{content:"";position:absolute;left:-9px;bottom:16px;border:7px solid transparent;border-right:11px solid #fff}
+.bubble.pop{animation:pop .35s}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+.mascot{flex:0 0 auto;width:68px;height:76px}
+.mascot svg{width:100%;height:100%;overflow:visible}
+.mascot .body{animation:bob 2.4s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes bob{50%{transform:translateY(-3px) scaleY(1.02)}}
+.mascot .lid{transform-origin:center;animation:blink 4.5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(0)}96%{transform:scaleY(1)}}
+.mascot.wow .body{animation:jump .5s}
+.mascot.oops .body{animation:wobble .45s}
+@keyframes jump{40%{transform:translateY(-14px)}}
+@keyframes wobble{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+
+/* ===== Játéktár ===== */
+.panel{background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 rgba(27,27,47,.3);padding:14px;display:grid;gap:10px}
+.prow{display:flex;gap:8px}
+.pbtn{flex:1;text-align:left;background:#fff3c4;border:3px solid var(--ink);border-radius:16px;padding:10px 14px;box-shadow:0 4px 0 var(--ink);display:grid}
+.pnev{font:400 24px/1 var(--f-comic);letter-spacing:.05em}.psub{font:800 14px var(--f-body);opacity:.75}
+.ptor{width:58px;border:3px solid var(--ink);border-radius:16px;background:#fff;font:900 20px var(--f-body);box-shadow:0 4px 0 var(--ink)}
+.ptor.biztos{width:auto;padding:0 10px;background:var(--bad);color:#fff;font-size:14px}
+.ujp{display:grid;gap:10px}.ujp label{display:grid;gap:4px;font:900 15px var(--f-body)}
+.ujp input,.ujp select{font:800 20px var(--f-body);padding:10px 12px;border:3px solid var(--ink);border-radius:14px;background:#fff}
+.ujp input:focus{outline:4px solid var(--yellow)}
+.toprow{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.ossz{font:400 24px var(--f-comic);color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill;letter-spacing:.05em}
+.gcard{display:flex;align-items:center;gap:12px;text-align:left;text-decoration:none;color:var(--ink);background:var(--c);border:3px solid var(--ink);border-radius:20px;
+  box-shadow:0 6px 0 var(--d),0 6px 0 3px var(--ink);padding:12px 14px;transition:transform .08s}
+.gcard:active{transform:translateY(4px)}
+.gik{flex:0 0 auto;width:58px;height:58px;display:grid;place-items:center;font-size:34px;background:#fff;border:3px solid var(--ink);border-radius:16px}
+.gtx{flex:1;min-width:0;display:grid}.gtx b{font:400 28px/1 var(--f-comic);letter-spacing:.05em;color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill}
+.gtx small{font:800 14px/1.25 var(--f-body)}
+.gpr{font:900 15px/1.2 var(--f-body);text-align:right;white-space:nowrap}
+.fej{display:flex;align-items:center;gap:8px}
+.fej h2{flex:1;margin:0;text-align:center;font:400 30px/1 var(--f-comic);letter-spacing:.05em;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink)}
+.fej h2 small{display:block;font:900 14px var(--f-body);-webkit-text-stroke:0;text-shadow:0 1px 0 rgba(27,27,47,.5);letter-spacing:0;margin-top:4px}
+.szgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sz{aspect-ratio:1;border:3px solid var(--ink);border-radius:14px;background:var(--c);box-shadow:0 4px 0 var(--d),0 4px 0 2px var(--ink);display:grid;place-items:center;padding:2px;position:relative}
+.sz span{font:400 clamp(18px,6vw,26px)/1 var(--f-comic);color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill}
+.sz i{position:absolute;bottom:3px;font:900 10px var(--f-body);font-style:normal;color:var(--yellow);-webkit-text-stroke:.6px var(--ink);letter-spacing:-1px}
+.sz[disabled]{background:#c9ccd6;box-shadow:0 4px 0 #9aa0a8,0 4px 0 2px var(--ink)}
+.sz[disabled] span{font-size:18px;-webkit-text-stroke:0}
+.sz.kov{outline:4px dashed #fff;outline-offset:3px;animation:pop 1.2s infinite}
+.info{text-align:center;color:#fff;font:900 16px var(--f-body);text-shadow:0 2px 0 rgba(27,27,47,.6);min-height:20px}
+.ter{display:grid;place-items:center}
+.ter canvas{display:block;border-radius:14px;box-shadow:0 6px 0 rgba(27,27,47,.35);touch-action:none}
+.kont{display:grid;place-items:center}
+.dpad{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(2,64px);gap:8px}
+.dpad .cbtn{font-size:26px;padding:0;touch-action:none}
+.dpad [data-d=fel]{grid-column:2}.dpad [data-d=bal]{grid-column:1;grid-row:2}.dpad [data-d=le]{grid-column:2;grid-row:2}.dpad [data-d=jobb]{grid-column:3;grid-row:2}
+.gsor{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.gsor .cbtn{min-width:58px;height:58px;font-size:26px;padding:0 10px;touch-action:none}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(27,27,47,.55);display:grid;place-items:center;padding:16px;animation:fadein .2s}
+@keyframes fadein{from{opacity:0}}
+.mdoboz{position:relative;width:min(100%,440px);background:#fff;border:4px solid var(--ink);border-radius:26px;padding:56px 16px 18px;display:grid;gap:14px;box-shadow:0 8px 0 rgba(27,27,47,.4)}
+.burst{position:absolute;left:50%;top:-34px;translate:-50% 0;rotate:-4deg;background:var(--yellow);border:4px solid var(--ink);border-radius:18px;padding:8px 22px;
+  font:400 44px/1 var(--f-comic);letter-spacing:.05em;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:3px 3px 0 var(--ink);white-space:nowrap}
+.stars{display:flex;justify-content:center;gap:8px;font-size:54px;line-height:1}
+.stars span{color:#d9dce5;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill}
+.stars span.on{color:var(--yellow);animation:pop .4s backwards}.stars span.on:nth-child(2){animation-delay:.15s}.stars span.on:nth-child(3){animation-delay:.3s}
+.mgomb{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#conf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="clouds" aria-hidden="true"><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div></div>
+<main class="wrap" id="app"></main>
+<canvas id="conf" aria-hidden="true"></canvas>
+<script>const JATEKOK = [];</script>
+<script src="js/kozos.js"></script>
+<script src="js/jatekok/kigyo.js"></script>
+<script src="js/jatekok/tetris.js"></script>
+<script src="js/jatekok/amoba.js"></script>
+<script src="js/jatekok/kirako.js"></script>
+<script src="js/jatekok/memoria.js"></script>
+<script src="js/keret.js"></script>
+</body>
+</html>

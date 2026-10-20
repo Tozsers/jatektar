@@ -64,19 +64,22 @@ function szintek(jid) {
   app.innerHTML = `
     <div class="fej"><button class="cbtn small" id="vissza" aria-label="Vissza">◀</button><h2 style="--c:${j.szin}">${j.ikon} ${j.nev.toUpperCase()}</h2>${nemaGomb()}</div>
     ${talk(ny > 1 ? `A ${ny}. szint vár rád!` : j.duma.start[0])}
+    ${j.szabad ? `<div class="panel szabad"><b>Szabad játék</b><div class="gsor">${j.szabad().map((s, i) => `<button class="cbtn small" data-s="${i}">${s.nev}</button>`).join('')}</div></div>` : ''}
     <div class="panel"><div class="szgrid">${Array.from({ length: 100 }, (_, i) => { const n = i + 1, c = Tar.jcs(jid, n), zar = n > ny;
       return `<button class="sz ${c ? 'kesz' : ''} ${n === ny ? 'kov' : ''}" data-n="${n}" ${zar ? 'disabled' : ''} style="--c:${j.szin};--d:${j.szinD}">
         <span>${zar ? '🔒' : n}</span><i>${c ? '★'.repeat(c) : ''}</i></button>`; }).join('')}</div></div>`;
   document.getElementById('vissza').onclick = fooldal; nemaBekot();
   app.querySelectorAll('.sz:not([disabled])').forEach(b => b.onclick = () => { Hang.tesz(); jatek(jid, +b.dataset.n); });
+  app.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { Hang.tesz(); jatek(jid, 0, j.szabad()[+b.dataset.s]); });
   const kov = app.querySelector('.sz.kov'); if (kov) kov.scrollIntoView({ block: 'center' });
 }
 
 /* ---------- játék ---------- */
-function jatek(jid, n) {
+// n = 0: szabad játék (egyedi beállítás, csillag nem jár)
+function jatek(jid, n, egyedi) {
   takarit(); const j = JATEK(jid), kulcs = jid + ':' + n; probak[kulcs] = (probak[kulcs] || 0) + 1;
   app.innerHTML = `
-    <div class="fej"><button class="cbtn small" id="vissza" aria-label="Vissza">◀</button><h2 style="--c:${j.szin}">${j.nev.toUpperCase()}<small>${n}. szint · ${esc(j.cel(n))}</small></h2>${nemaGomb()}</div>
+    <div class="fej"><button class="cbtn small" id="vissza" aria-label="Vissza">◀</button><h2 style="--c:${j.szin}">${j.nev.toUpperCase()}<small>${n ? `${n}. szint · ${esc(j.cel(n))}` : `Szabad játék · ${esc(egyedi.nev)}`}</small></h2>${nemaGomb()}</div>
     ${talk(veletlen(j.duma.start))}
     <div class="info" id="info"></div>
     <div class="ter" id="ter"></div>
@@ -123,25 +126,25 @@ function jatek(jid, n) {
     },
     billentyu(f) { addEventListener('keydown', f); kulcsok.push(f); },
     nyert(cs, uzenet) {
-      const uj = Tar.jRogzit(jid, n, cs); Konfetti.lo(); Hang.gyoz();
+      if (n) Tar.jRogzit(jid, n, cs); Konfetti.lo(); Hang.gyoz();
       vegAblak(j, n, `<div class="stars">${[1, 2, 3].map(i => `<span class="${i <= cs ? 'on' : ''}">★</span>`).join('')}</div>`,
-        uzenet || veletlen(j.duma.nyer), 'huu', 'SZUPER!', true, uj);
+        uzenet || veletlen(j.duma.nyer), 'huu', 'SZUPER!', !!n, egyedi);
     },
-    vesztett(uzenet) { vegAblak(j, n, '', uzenet || veletlen(j.duma.veszt), 'hoppa', 'HOPPÁ!', false); }
+    vesztett(uzenet) { vegAblak(j, n, '', uzenet || veletlen(j.duma.veszt), 'hoppa', 'HOPPÁ!', false, egyedi); }
   };
   // a vásznak a képregényes betűkkel rajzolnak: előbb töltődjenek be (különben sima betűvel jelenne meg)
   Promise.all(['400 30px "Lilita One"', '400 30px Bangers'].map(f => document.fonts.load(f))).catch(() => { })
-    .then(() => { if (ter.isConnected && !futo) futo = j.indit(ctx, n); });
+    .then(() => { if (ter.isConnected && !futo) futo = j.indit(ctx, n, egyedi); });
 }
 
-function vegAblak(j, n, csillag, szoveg, hangulat, cim, nyert) {
+function vegAblak(j, n, csillag, szoveg, hangulat, cim, nyert, egyedi) {
   const d = document.createElement('div'); d.className = 'modal';
   d.innerHTML = `<div class="mdoboz"><div class="burst">${cim}</div>${csillag}
     <div class="talk"><div class="mascot wow">${Karcsi.svg(hangulat, (Tar.p() || {}).ruha)}</div><div class="bubble">${esc(szoveg)}</div></div>
     <div class="mgomb"><button class="cbtn small" id="m-ujra">ÚJRA</button><button class="cbtn blue small" id="m-szint">SZINTEK</button>
     ${nyert && n < 100 ? '<button class="cbtn pink" id="m-kov">KÖVETKEZŐ ▶</button>' : ''}</div></div>`;
   app.appendChild(d);
-  d.querySelector('#m-ujra').onclick = () => jatek(j.id, n);
+  d.querySelector('#m-ujra').onclick = () => jatek(j.id, n, egyedi);
   d.querySelector('#m-szint').onclick = () => szintek(j.id);
   const k = d.querySelector('#m-kov'); if (k) k.onclick = () => jatek(j.id, n + 1);
 }

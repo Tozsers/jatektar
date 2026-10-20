@@ -1,15 +1,17 @@
 /* ============================================================
    AMŐBA — Karcsi ellen. Te vagy az X, te kezdesz.
-   1–15: 3×3, 3 egy sorban · 16–55: 7×7 / 9×9, 4 egy sorban · 56–100: 11×11 → 15×15, 5 egy sorban (igazi amőba).
+   1–5: 3×3, 3 egy sorban · 6–40: 7×7 / 9×9, 4 egy sorban · 41–100: 11×11 → 15×15, 5 egy sorban (igazi amőba). + Szabad játék.
    Karcsi ereje (ero 0…1) szintenként nő; 0-nál sokat téved, 1-nél a legjobb lépést keresi.
    Győzelem 3 csillag, döntetlen 2 csillag (az is továbbenged), vereség: újra.
    ============================================================ */
 const Amoba = {
   cfg(n) {
-    if (n <= 15) return { N: 3, W: 3, ero: Math.min(1, (n - 1) / 10) };
-    if (n <= 55) return { N: n <= 35 ? 7 : 9, W: 4, ero: Math.min(.97, .35 + (n - 16) / 40 * .6) };
-    return { N: n <= 75 ? 11 : n <= 90 ? 13 : 15, W: 5, ero: Math.min(.98, .45 + (n - 56) / 44 * .53) };
+    if (n <= 5) return { N: 3, W: 3, ero: (n - 1) / 5 };
+    if (n <= 40) return { N: n <= 22 ? 7 : 9, W: 4, ero: Math.min(.95, .3 + (n - 6) / 34 * .65) };
+    return { N: n <= 60 ? 11 : n <= 80 ? 13 : 15, W: 5, ero: Math.min(.98, .4 + (n - 41) / 59 * .58) };
   },
+  // szabad játék: bármikor választható tábla, közepes Karcsi, csillag nélkül
+  SZABAD: [{ nev: '3×3', N: 3, W: 3, ero: .6 }, { nev: '7×7', N: 7, W: 4, ero: .6 }, { nev: '9×9', N: 9, W: 4, ero: .6 }, { nev: '15×15', N: 15, W: 5, ero: .6 }],
   ures(N) { return Array.from({ length: N }, () => Array(N).fill(0)); },
   DIR: [[1, 0], [0, 1], [1, 1], [1, -1]],
   // nyerő sor az (i,j) lépés után? visszaadja a cellákat vagy null
@@ -98,8 +100,9 @@ JATEKOK.push({
   duma: { start: ['Te vagy az X, kezdj! Én a karikákat szeretem.', 'Na, ki rak ki előbb egy sort?', 'Koppints egy mezőre!'],
           nyer: ['Megvertél! Ezt nem mondom el senkinek.', 'Hű, ezt nem láttam jönni!', 'Bajnok! Kérek visszavágót!'],
           veszt: ['Hehe, most én nyertem! De nagyon szoros volt.', 'Figyeld a karikáimat, mindig készülök valamire!', 'Visszavágó? Visszavágó!'] },
-  indit(ctx, n) {
-    const A = Amoba, cfg = A.cfg(n), N = cfg.N, r = rnd(Date.now());
+  szabad: () => Amoba.SZABAD,
+  indit(ctx, n, egyedi) {
+    const A = Amoba, cfg = egyedi || A.cfg(n), N = cfg.N, r = rnd(Date.now());
     const meret = Math.floor(Math.min(ctx.szelesseg, 520, ctx.helyMagas(10)) / N) * N, c = meret / N;
     const { cv, x } = ctx.vaszon(meret, meret);
     const t = A.ures(N); let soros = 1, vege = false, gyoztesSor = null, utolso = null, lepesek = 0;

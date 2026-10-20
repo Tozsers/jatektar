@@ -32,7 +32,7 @@ JATEKOK.push({
           veszt: ['Lejárt az idő! De közel voltál.', 'Hajrá, még egyszer!', 'Most már tudod, mi hol van!'] },
   indit(ctx, n) {
     const M = Memoria, cfg = M.cfg(n), r = rnd(Date.now()), p = M.pakli(cfg, r), O = M.oszlopok(p.length), S = Math.ceil(p.length / O);
-    const c = Math.floor(Math.min(ctx.szelesseg, 480) / O), W = c * O, H = c * S;
+    const c = Math.floor(Math.min(ctx.szelesseg / O, 480 / O, ctx.helyMagas(10) / S)), W = c * O, H = c * S;
     const { cv, x } = ctx.vaszon(W, H);
     const fel = new Set(), kesz = new Set(); let elso = -1, zar = false, proba = 0, vege = false, kezd = performance.now(), idozito = null;
     const info = () => ctx.info(`Párok: ${kesz.size / 2} / ${cfg.par} · próba: ${proba}${cfg.ido ? ` · ${Math.max(0, Math.ceil(cfg.ido - (performance.now() - kezd) / 1000))} mp` : ''}`);

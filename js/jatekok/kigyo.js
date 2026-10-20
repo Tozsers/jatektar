@@ -51,7 +51,7 @@ JATEKOK.push({
           veszt: ['Au! Ez fájt neki.', 'Hoppá, kanyarodni is kell néha!', 'Még egyszer, most menni fog!'] },
   indit(ctx, n) {
     const K = Kigyo, M = K.M, cfg = K.cfg(n), r = rnd(Date.now());
-    const meret = Math.floor(Math.min(ctx.szelesseg, 520) / M) * M, c = meret / M;
+    const meret = Math.floor(Math.min(ctx.szelesseg, 520, ctx.helyMagas(150)) / M) * M, c = meret / M;
     const { cv, x } = ctx.vaszon(meret, meret);
     let k = [[5, 7], [4, 7], [3, 7]], ir = [1, 0], kovIr = [1, 0], alma = K.ujAlma(k, cfg, r), evett = 0, fut = true, ido = 0, elozo = 0;
     ctx.info(`Alma: 0 / ${cfg.cel}`);

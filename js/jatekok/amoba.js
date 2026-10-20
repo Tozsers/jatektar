@@ -100,7 +100,7 @@ JATEKOK.push({
           veszt: ['Hehe, most én nyertem! De nagyon szoros volt.', 'Figyeld a karikáimat, mindig készülök valamire!', 'Visszavágó? Visszavágó!'] },
   indit(ctx, n) {
     const A = Amoba, cfg = A.cfg(n), N = cfg.N, r = rnd(Date.now());
-    const meret = Math.floor(Math.min(ctx.szelesseg, 520) / N) * N, c = meret / N;
+    const meret = Math.floor(Math.min(ctx.szelesseg, 520, ctx.helyMagas(10)) / N) * N, c = meret / N;
     const { cv, x } = ctx.vaszon(meret, meret);
     const t = A.ures(N); let soros = 1, vege = false, gyoztesSor = null, utolso = null, lepesek = 0;
     ctx.info(`${cfg.W} egy sorban · Te: X`);

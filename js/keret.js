@@ -85,6 +85,8 @@ function jatek(jid, n) {
   const ter = document.getElementById('ter'), kont = document.getElementById('kont');
   const ctx = {
     szelesseg: Math.min(ter.clientWidth || innerWidth - 32, 560),
+    // ennyi CSS-pixel magas lehet a pálya, ha alatta `foglal` px vezérlő is elfér (görgetés nélkül)
+    helyMagas: foglal => Math.max(220, innerHeight - ter.getBoundingClientRect().top - foglal - 12),
     probalkozas: () => probak[kulcs],
     info: t => { document.getElementById('info').textContent = t; },
     mond: (t, h = 'vidam', a = '') => Karcsi.mond(document.getElementById('talk'), t, h, a),

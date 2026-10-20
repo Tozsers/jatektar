@@ -43,7 +43,7 @@ JATEKOK.push({
   indit(ctx, n) {
     const K = Kirako, cfg = K.cfg(n), N = cfg.N, r = rnd(5000 + n);
     const t = K.kever(N, cfg.kever, r);
-    const meret = Math.floor(Math.min(ctx.szelesseg, 440) / N) * N, c = meret / N;
+    const meret = Math.floor(Math.min(ctx.szelesseg, 440, ctx.helyMagas(10)) / N) * N, c = meret / N;
     const { cv, x } = ctx.vaszon(meret, meret);
     const SZIN = [['#2f9bff', '#1a6fd1'], ['#34c759', '#1f9a40'], ['#ff9a1f', '#d9700a'], ['#a98bff', '#7a5ce0'], ['#ff5d8f', '#d63a6c']];
     let lepes = 0, vege = false;

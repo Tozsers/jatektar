@@ -56,7 +56,7 @@ JATEKOK.push({
           veszt: ['Hoppá, megtelt a doboz!', 'Túl magasra nőtt a torony. Lapítsunk!', 'Semmi baj, újrapakoljuk!'] },
   indit(ctx, n) {
     const T = Tetris, cfg = T.cfg(n), r = rnd(Date.now());
-    const c = Math.floor(Math.min(ctx.szelesseg * .72, 380, (innerHeight - 330) / 2) / T.W * 2) / 2 | 0 || 16;
+    const c = Math.max(12, Math.floor(Math.min(ctx.szelesseg * .72 / T.W, 38, ctx.helyMagas(80) / T.H)));
     const BW = c * T.W, BH = c * T.H, OLD = Math.max(70, c * 4.2);
     const { cv, x } = ctx.vaszon(BW + OLD + 10, BH);
     const t = T.ures(); T.szemet(t, cfg.szemet, r);

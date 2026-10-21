@@ -129,6 +129,11 @@ button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
 .stars span{color:#d9dce5;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill}
 .stars span.on{color:var(--yellow);animation:pop .4s backwards}.stars span.on:nth-child(2){animation-delay:.15s}.stars span.on:nth-child(3){animation-delay:.3s}
 .mgomb{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.szolista{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:10px 12px;margin-bottom:10px;max-width:560px}
+.szolista b{width:100%;text-align:center;font:400 20px var(--f-comic);letter-spacing:.05em}
+.szolista span{font:900 15px var(--f-body);letter-spacing:.04em}
+.szolista span.meg{text-decoration:line-through 3px #ff5d8f;opacity:.45}
+.kont{display:grid;place-items:center;gap:4px}
 #conf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -138,12 +143,15 @@ button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
 <main class="wrap" id="app"></main>
 <canvas id="conf" aria-hidden="true"></canvas>
 <script>const JATEKOK = [];</script>
-<script src="js/kozos.js?v=5"></script>
-<script src="js/jatekok/kigyo.js?v=5"></script>
-<script src="js/jatekok/tetris.js?v=5"></script>
-<script src="js/jatekok/amoba.js?v=5"></script>
-<script src="js/jatekok/kirako.js?v=5"></script>
-<script src="js/jatekok/memoria.js?v=5"></script>
-<script src="js/keret.js?v=5"></script>
+<script src="js/kozos.js?v=7"></script>
+<script src="js/jatekok/kigyo.js?v=7"></script>
+<script src="js/jatekok/tetris.js?v=7"></script>
+<script src="js/jatekok/amoba.js?v=7"></script>
+<script src="js/jatekok/kirako.js?v=7"></script>
+<script src="js/jatekok/memoria.js?v=7"></script>
+<script src="js/jatekok/szavak.js?v=7"></script>
+<script src="js/jatekok/szokereso.js?v=7"></script>
+<script src="js/jatekok/majong.js?v=7"></script>
+<script src="js/keret.js?v=7"></script>
 </body>
 </html>

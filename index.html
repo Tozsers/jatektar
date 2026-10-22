@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Karcsi Játéktára</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Kígyó, amőba, tetrisz, kirakó, memória — 100-100 szint, Kocka Karcsival.">
+<meta name="description" content="Kígyó, amőba, tetrisz, kirakó, memória, szemfüles — 100-100 szint, Kocka Karcsival.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
 <style>
@@ -134,6 +134,26 @@ button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
 .szolista span{font:900 15px var(--f-body);letter-spacing:.04em}
 .szolista span.meg{text-decoration:line-through 3px #ff5d8f;opacity:.45}
 .kont{display:grid;place-items:center;gap:4px}
+/* Szemfüles: képes egyenletek (DOM, nem vászon) */
+.szf{width:100%;display:grid;gap:10px}
+.szf-kartya{background:#fffdf3;border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 rgba(27,27,47,.3);padding:8px 6px;display:grid;gap:4px}
+.szf-sor{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px 5px;font-size:clamp(20px,6.2vw,30px);line-height:1.15;padding:3px 5px;border-radius:14px}
+.szf-tok{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;white-space:nowrap}
+.szf-tok.csop{background:#d6e7fb;border:2px dashed #7aaee6;border-radius:12px;padding:0 4px;letter-spacing:-.08em}
+.szf-tok.ora{font-size:1.35em;line-height:1}
+.szf-op{font:400 1em/1 var(--f-tile);color:var(--plus-d)}
+.szf-sz{font:400 1em/1 var(--f-tile);min-width:1.4em;text-align:center}
+.szf-sor.kerdes{background:var(--yellow);border:3px solid var(--ink);margin-top:4px}
+.szf-sor.kerdes .szf-sz{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:2px 10px}
+.szf-sor.jo{background:var(--ok);animation:pop .4s}
+.szf-sor.rossz{animation:wobble .45s}
+.szf-jegyzet{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:8px}
+.szf-jegyzet b{font:400 18px var(--f-comic);letter-spacing:.05em;width:100%;text-align:center}
+.szf-j{display:flex;align-items:center;gap:4px;font-size:24px}
+.szf-j input{width:52px;font:400 22px var(--f-tile);text-align:center;padding:4px;border:3px solid var(--ink);border-radius:10px;user-select:text;-webkit-user-select:text}
+.szf-j input.sugo{background:#fff3c4}
+.szf-pad{display:grid;grid-template-columns:repeat(4,64px);gap:6px;margin-bottom:6px}
+.szf-pad .cbtn{height:48px;padding:0;font-size:26px;touch-action:none}
 #conf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -143,15 +163,16 @@ button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
 <main class="wrap" id="app"></main>
 <canvas id="conf" aria-hidden="true"></canvas>
 <script>const JATEKOK = [];</script>
-<script src="js/kozos.js?v=7"></script>
-<script src="js/jatekok/kigyo.js?v=7"></script>
-<script src="js/jatekok/tetris.js?v=7"></script>
-<script src="js/jatekok/amoba.js?v=7"></script>
-<script src="js/jatekok/kirako.js?v=7"></script>
-<script src="js/jatekok/memoria.js?v=7"></script>
-<script src="js/jatekok/szavak.js?v=7"></script>
-<script src="js/jatekok/szokereso.js?v=7"></script>
-<script src="js/jatekok/majong.js?v=7"></script>
-<script src="js/keret.js?v=7"></script>
+<script src="js/kozos.js?v=8"></script>
+<script src="js/jatekok/kigyo.js?v=8"></script>
+<script src="js/jatekok/tetris.js?v=8"></script>
+<script src="js/jatekok/amoba.js?v=8"></script>
+<script src="js/jatekok/kirako.js?v=8"></script>
+<script src="js/jatekok/memoria.js?v=8"></script>
+<script src="js/jatekok/szavak.js?v=8"></script>
+<script src="js/jatekok/szokereso.js?v=8"></script>
+<script src="js/jatekok/majong.js?v=8"></script>
+<script src="js/jatekok/szemfules.js?v=8"></script>
+<script src="js/keret.js?v=8"></script>
 </body>
 </html>

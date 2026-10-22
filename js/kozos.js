@@ -117,8 +117,14 @@ const RUHAK = [
 const RUHA = id => RUHAK.find(r=>r.id===id);
 
 const Karcsi = {
-  svg(hangulat='vidam', ruhaId=null){
+  // liza = true: Liza, Karcsi barátnője (a „Liza, merre vagy?” rajzfilmből) — rózsaszín, copfos, masnis, szempillás
+  svg(hangulat='vidam', ruhaId=null, liza=false){
     const ru = ruhaId ? RUHA(ruhaId) : null;
+    const [test, also] = liza ? ['#ff7eb6', '#d9488a'] : ['#2f9bff', '#1a6fd1'];
+    const copf = liza ? `<path d="M10 22 Q-8 18 -6 36 Q-5 50 6 46 Q2 36 12 30 Z M70 22 Q88 18 86 36 Q85 50 74 46 Q78 36 68 30 Z" fill="#8a5230" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><circle cx="8" cy="23" r="4" fill="#ff5d9e" stroke="${INK}" stroke-width="2"/><circle cx="72" cy="23" r="4" fill="#ff5d9e" stroke="${INK}" stroke-width="2"/>` : '';
+    const frufru = liza ? `<path d="M10 20 Q16 6 30 12 Q40 4 50 12 Q64 6 70 20 Q58 16 50 19 Q40 13 30 19 Q20 16 10 20 Z" fill="#8a5230" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>` : '';
+    const masni = liza && !(ru && ru.elol) ? `<path d="M56 6 L45 -1 L45 13 Z M56 6 L67 -1 L67 13 Z" fill="#ff5d9e" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="56" cy="6" r="3.2" fill="#e2476e" stroke="${INK}" stroke-width="2"/>` : '';
+    const pilla = liza ? `<path d="M19 31 L14 28 M20 27 L16 22 M61 31 L66 28 M60 27 L64 22" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/>` : '';
     const szaj = {
       vidam:`<path d="M27 52 Q40 63 53 52" fill="#7a1f3a" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><path d="M33 56 Q40 60 47 56" fill="#ff8fab"/>`,
       hoppa:`<ellipse cx="40" cy="55" rx="6" ry="7" fill="#7a1f3a" stroke="${INK}" stroke-width="3"/>`,
@@ -131,26 +137,32 @@ const Karcsi = {
     const g = hangulat==='gondol';
     return `<svg viewBox="0 -12 80 102" aria-hidden="true"><g class="body">
       <ellipse cx="40" cy="86" rx="24" ry="4" fill="rgba(27,27,47,.25)"/>
-      ${ru&&ru.hatul||''}
+      ${ru&&ru.hatul||''}${copf}
       <path d="M14 74 L10 84 M66 74 L70 84" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
-      <rect x="6" y="10" width="68" height="66" rx="14" fill="#2f9bff" stroke="${INK}" stroke-width="3.5"/>
+      <rect x="6" y="10" width="68" height="66" rx="14" fill="${test}" stroke="${INK}" stroke-width="3.5"/>
       <rect x="6" y="10" width="68" height="25" rx="14" fill="rgba(255,255,255,.28)"/>
-      <path d="M9 68 Q40 78 71 68" stroke="#1a6fd1" stroke-width="5" fill="none"/>
-      ${szemoldok}
+      <path d="M9 68 Q40 78 71 68" stroke="${also}" stroke-width="5" fill="none"/>
+      ${frufru}${szemoldok}${pilla}
       <circle cx="28" cy="36" r="9" fill="#fff" stroke="${INK}" stroke-width="3"/><circle cx="52" cy="36" r="9" fill="#fff" stroke="${INK}" stroke-width="3"/>
       <circle cx="${g?31:29}" cy="${g?33:37}" r="4" fill="${INK}"/><circle cx="${g?55:53}" cy="${g?33:37}" r="4" fill="${INK}"/>
       <circle cx="30" cy="35" r="1.4" fill="#fff"/><circle cx="54" cy="35" r="1.4" fill="#fff"/>
-      <g class="lid"><rect x="18" y="26" width="20" height="20" rx="9" fill="#2f9bff"/><rect x="42" y="26" width="20" height="20" rx="9" fill="#2f9bff"/></g>
+      <g class="lid"><rect x="18" y="26" width="20" height="20" rx="9" fill="${test}"/><rect x="42" y="26" width="20" height="20" rx="9" fill="${test}"/></g>
       <circle cx="17" cy="50" r="4.5" fill="#ff8fab" opacity=".7"/><circle cx="63" cy="50" r="4.5" fill="#ff8fab" opacity=".7"/>
       ${szaj}
-      ${ru&&ru.elol||''}
+      ${ru&&ru.elol||''}${masni}
     </g></svg>`;
   },
   mond(el, szoveg, hangulat='vidam', anim=''){
     if(!el) return;
     const m=el.querySelector('.mascot'), b=el.querySelector('.bubble');
-    m.innerHTML=this.svg(hangulat, el.dataset.ruha||null); m.className='mascot '+anim;
+    m.innerHTML=Kisero.svg(hangulat, (Tar.p()||{}).ruha); m.className='mascot '+anim;
     b.textContent=szoveg; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
   }
+};
+// a játékos kísérője: Karcsi (alap) vagy Liza — profilonként (p.kisero), a Számhegy nem nyúl hozzá
+const Kisero = {
+  liza(){ return (Tar.p()||{}).kisero === 'liza'; },
+  nev(masik=false){ return this.liza() !== masik ? 'Liza' : 'Karcsi'; },
+  svg(hangulat='vidam', ruhaId=null, masik=false){ return Karcsi.svg(hangulat, masik ? null : ruhaId, this.liza() !== masik); }
 };
 const veletlen = t => t[Math.floor(Math.random()*t.length)];

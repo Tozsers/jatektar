@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Karcsi Játéktára</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Kígyó, amőba, tetrisz, kirakó, memória, szemfüles — 100-100 szint, Kocka Karcsival.">
+<meta name="description" content="Kígyó, amőba, tetrisz, kirakó, memória, szemfüles — 100-100 szint, Kocka Karcsival és Lizával.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
 <style>
@@ -80,6 +80,23 @@ button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
 .mascot.oops .body{animation:wobble .45s}
 @keyframes jump{40%{transform:translateY(-14px)}}
 @keyframes wobble{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+/* Liza / Karcsi: a győzelem-ablakban a másik is ugrál; főoldal: kísérő-csere és szalmabála-bújócska */
+.talk .mascot.duo{width:56px;height:62px;align-self:flex-end}
+.mascot.duo .body{animation:ugral .55s ease-in-out infinite alternate;transform-origin:50% 100%}
+@keyframes ugral{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-16px) rotate(6deg)}}
+.kisero{justify-self:center}.kisero b{color:var(--eq)}
+.bujocska{display:grid;place-items:center;padding:30px 0 8px}
+.bala{position:relative;width:200px;height:215px;overflow:hidden;border:0;background:none;padding:0;cursor:pointer}
+.balasvg{position:absolute;inset:auto 0 0 0;width:100%;height:auto;z-index:1}
+.bujt{position:absolute;left:58%;bottom:16px;width:62px;height:70px;z-index:0;animation:kukucs 9s ease-in-out infinite}
+.bujt svg{width:100%;height:100%;overflow:visible}
+.bujt .tel{position:absolute;right:-14px;top:30px;font-size:22px;font-style:normal;rotate:12deg}
+@keyframes kukucs{0%,62%,100%{transform:translateY(0)}68%,82%{transform:translateY(-62px)}72%{transform:translateY(-66px) rotate(4deg)}76%{transform:translateY(-62px) rotate(-4deg)}}
+.bala.elo .bujt{animation:elo .45s forwards}
+@keyframes elo{0%{transform:translateY(0)}60%{transform:translateY(-124px)}100%{transform:translateY(-108px) rotate(-6deg)}}
+.bala:active .balasvg{transform:translateY(2px)}
+.bujt .lid{transform-origin:center;animation:blink 4.5s infinite}
+.bbub{flex:none;margin-top:12px;text-align:center}.bbub::before{display:none}
 
 /* ===== Játéktár ===== */
 .panel{background:#fff;border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 rgba(27,27,47,.3);padding:14px;display:grid;gap:10px}
@@ -163,16 +180,16 @@ button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
 <main class="wrap" id="app"></main>
 <canvas id="conf" aria-hidden="true"></canvas>
 <script>const JATEKOK = [];</script>
-<script src="js/kozos.js?v=8"></script>
-<script src="js/jatekok/kigyo.js?v=8"></script>
-<script src="js/jatekok/tetris.js?v=8"></script>
-<script src="js/jatekok/amoba.js?v=8"></script>
-<script src="js/jatekok/kirako.js?v=8"></script>
-<script src="js/jatekok/memoria.js?v=8"></script>
-<script src="js/jatekok/szavak.js?v=8"></script>
-<script src="js/jatekok/szokereso.js?v=8"></script>
-<script src="js/jatekok/majong.js?v=8"></script>
-<script src="js/jatekok/szemfules.js?v=8"></script>
-<script src="js/keret.js?v=8"></script>
+<script src="js/kozos.js?v=9"></script>
+<script src="js/jatekok/kigyo.js?v=9"></script>
+<script src="js/jatekok/tetris.js?v=9"></script>
+<script src="js/jatekok/amoba.js?v=9"></script>
+<script src="js/jatekok/kirako.js?v=9"></script>
+<script src="js/jatekok/memoria.js?v=9"></script>
+<script src="js/jatekok/szavak.js?v=9"></script>
+<script src="js/jatekok/szokereso.js?v=9"></script>
+<script src="js/jatekok/majong.js?v=9"></script>
+<script src="js/jatekok/szemfules.js?v=9"></script>
+<script src="js/keret.js?v=9"></script>
 </body>
 </html>

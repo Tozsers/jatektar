@@ -12,7 +12,7 @@ function takarit() {
   kulcsok.forEach(f => removeEventListener('keydown', f)); kulcsok = [];
   scrollTo(0, 0);
 }
-const talk = (szoveg, h = 'vidam') => `<div class="talk" id="talk"><div class="mascot">${Karcsi.svg(h, (Tar.p() || {}).ruha)}</div><div class="bubble">${esc(szoveg)}</div></div>`;
+const talk = (szoveg, h = 'vidam') => `<div class="talk" id="talk"><div class="mascot">${Kisero.svg(h, (Tar.p() || {}).ruha)}</div><div class="bubble">${esc(szoveg)}</div></div>`;
 const nemaGomb = () => `<button class="cbtn small" id="nema" aria-label="Hang ki/be">${Tar.d.nema ? 'NÉMA' : 'HANG'}</button>`;
 function nemaBekot() { const b = document.getElementById('nema'); if (b) b.onclick = () => { Tar.frissMent(() => { Tar.d.nema = !Tar.d.nema; }); b.textContent = Tar.d.nema ? 'NÉMA' : 'HANG'; Hang.tesz(); }; }
 
@@ -43,6 +43,11 @@ function jatekosok() {
   document.getElementById('ujp').onsubmit = e => { e.preventDefault(); const n = document.getElementById('pnev').value.trim(); if (!n) return; Tar.uj(n, document.getElementById('posz').value); Hang.gyoz(); fooldal(); };
 }
 
+const BALA_SVG = `<svg class="balasvg" viewBox="0 0 160 90" aria-hidden="true"><ellipse cx="80" cy="86" rx="70" ry="5" fill="rgba(27,27,47,.25)"/>
+  <rect x="6" y="14" width="148" height="72" rx="16" fill="#f2cb5e" stroke="#1b1b2f" stroke-width="3.5"/><rect x="12" y="18" width="136" height="14" rx="7" fill="#ffe59a"/>
+  <path d="M50 14 L52 86 M110 14 L108 86" stroke="#7a4a2a" stroke-width="4"/>
+  <path d="M22 44 l14 -4 M70 58 l16 -3 M124 40 l14 4 M30 70 l12 2 M88 38 l12 -5 M128 68 l12 -2" stroke="#a87a22" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+
 /* ---------- főoldal ---------- */
 function fooldal() {
   takarit(); Tar.betolt(); const p = Tar.p(); if (!p) return jatekosok();
@@ -50,11 +55,28 @@ function fooldal() {
     <div class="banner"><h1>JÁTÉKTÁR</h1></div>
     <div class="toprow"><button class="cbtn blue small" id="prof">${esc(p.nev)} ▾</button><span class="ossz">★ ${Tar.osszCs()}</span>${nemaGomb()}</div>
     ${talk(veletlen(['Mit játsszunk ma?', 'Válassz egy játékot! Én mindegyikben jó vagyok. Majdnem.', 'Hajrá! Minden szinten csillag jár!']))}
+    <button class="cbtn small kisero" id="kisero">Kísérőd: <b>${Kisero.nev()}</b> · csere: ${Kisero.nev(true)}</button>
     <a class="gcard" href="../szamhegy/" style="--c:#ffc82e;--d:#f08a00"><span class="gik">🧮</span><span class="gtx"><b>Számhegy</b><small>Keresztmatek ovistól géniuszig — a profilod ott is megvan!</small></span><span class="gpr">★ ${Object.values(p.csillag || {}).reduce((a, b) => a + b, 0)}</span></a>
     ${JATEKOK.map(j => { const o = Tar.jOssz(j.id); return `<button class="gcard" data-j="${j.id}" style="--c:${j.szin};--d:${j.szinD}">
       <span class="gik">${j.ikon}</span><span class="gtx"><b>${j.nev}</b><small>${esc(j.leiras)}</small></span>
-      <span class="gpr">${o.db}/100<br>★ ${o.cs}</span></button>`; }).join('')}`;
+      <span class="gpr">${o.db}/100<br>★ ${o.cs}</span></button>`; }).join('')}
+    <div class="bujocska"><button class="bala" id="bala" aria-label="Szalmabála — ki bújt el mögötte?">
+      <span class="bujt">${Kisero.svg('vidam', null, true)}<i class="tel">📱</i></span>${BALA_SVG}</button><div class="bubble bbub" id="bbub" hidden></div></div>`;
   document.getElementById('prof').onclick = jatekosok; nemaBekot();
+  document.getElementById('kisero').onclick = () => {
+    Tar.frissMent(() => { const pr = Tar.p(); pr.kisero = pr.kisero === 'liza' ? 'karcsi' : 'liza'; }); Hang.gyoz();
+    fooldal(); Karcsi.mond(document.getElementById('talk'), Kisero.liza() ? 'Szia! Liza vagyok. Mostantól én segítek, ígérem, nem telefonozok közben!' : 'Itt vagyok újra! Kocka Karcsi szolgálatra kész!', 'huu', 'wow');
+  };
+  // bújócska (a rajzfilmből): a bála mögül néha kikukucskál a másik; ha megböködöd, előbújik
+  document.getElementById('bala').onclick = e => {
+    const b = e.currentTarget; if (b.classList.contains('elo')) return;
+    b.classList.add('elo'); Hang.gyoz();
+    const bb = document.getElementById('bbub');
+    bb.textContent = Kisero.liza() ? veletlen(['Itt vagyok! Egész nap téged kerestelek, Liza!', 'Most én bújtam el! Írtam is. 😄'])
+                                   : veletlen(['Ja, szia! Itt vagyok. Írtam is!', 'Psszt! Itt telefonozok a bála mögött. 📱']);
+    bb.hidden = false; bb.classList.remove('pop'); void bb.offsetWidth; bb.classList.add('pop');
+    setTimeout(() => { b.classList.remove('elo'); bb.hidden = true; }, 3800);
+  };
   app.querySelectorAll('button.gcard').forEach(b => b.onclick = () => { Hang.tesz(); szintek(b.dataset.j); });
 }
 
@@ -140,7 +162,7 @@ function jatek(jid, n, egyedi) {
 function vegAblak(j, n, csillag, szoveg, hangulat, cim, nyert, egyedi) {
   const d = document.createElement('div'); d.className = 'modal';
   d.innerHTML = `<div class="mdoboz"><div class="burst">${cim}</div>${csillag}
-    <div class="talk"><div class="mascot wow">${Karcsi.svg(hangulat, (Tar.p() || {}).ruha)}</div><div class="bubble">${esc(szoveg)}</div></div>
+    <div class="talk"><div class="mascot wow">${Kisero.svg(hangulat, (Tar.p() || {}).ruha)}</div><div class="bubble">${esc(szoveg)}</div>${nyert ? `<div class="mascot duo">${Kisero.svg('huu', null, true)}</div>` : ''}</div>
     <div class="mgomb"><button class="cbtn small" id="m-ujra">ÚJRA</button><button class="cbtn blue small" id="m-szint">SZINTEK</button>
     ${nyert && n < 100 ? '<button class="cbtn pink" id="m-kov">KÖVETKEZŐ ▶</button>' : ''}</div></div>`;
   app.appendChild(d);
